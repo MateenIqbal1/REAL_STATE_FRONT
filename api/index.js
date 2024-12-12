@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import listingRoute from './routes/listingRoute.js'
 import {router as imageRoutes} from '../api/routes/imageRoutes.js'
 import cors from 'cors'
+import path from 'path'
 const PORT = 3000;
 dotenv.config();
 
@@ -18,6 +19,10 @@ try{
    }catch(error){
 console.log(error)
    }
+
+   const __dirname=path.resolve()
+
+
 const app=express();
 app.use(express.json());
 app.use(cors());
@@ -35,6 +40,11 @@ app.use('/api/auth',authRouter);
 app.use('/api/listing',listingRoute);
 app.use('/api/image',imageRoutes);
 
+app.use(express.static(path.join(__dirname,'/client/dist')))
+
+app.get('*',(req,res)=>{
+    res.sendFile(path.join(__dirname,'client','dist','index.html'))
+})
 
 
 
