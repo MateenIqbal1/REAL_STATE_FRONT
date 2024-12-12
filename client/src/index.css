@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body{
+    background-color: rgb(241, 245, 241);
+}
+
+/* Default width for larger screens */
+body .Toastify__toast-container {
+    width: 300px; /* Adjust width as needed */
+  }
+  
+  /* Smaller width for tablets */
+  @media (max-width: 768px) {
+    .Toastify__toast-container {
+      width: 70px;
+      margin-top: 10px;
+      /* Half the width for tablets */
+    }
+  }
+  
+  /* Smaller width for mobile phones */
+  @media (max-width: 480px) {
+    .Toastify__toast-container {
+      width: 20px; 
+    margin-top: 10px;
+    
+/* Same as tablet or smaller */
+    }
+  }
+  
