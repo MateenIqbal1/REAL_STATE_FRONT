@@ -5,7 +5,7 @@ export const uploadImages = createAsyncThunk(
   'images/uploadImages',
   async (formData, { rejectWithValue }) => {
     try {
-      const response = await fetch('http://localhost:3000/api/image/upload', {
+      const response = await fetch('https://realstate4-q8lsvtei.b4a.run/api/image/upload', {
         method: 'POST',
         body: formData, // Sending the FormData containing the files
       });

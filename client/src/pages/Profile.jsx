@@ -12,14 +12,14 @@ import {
   signOutUserSuccess,
   signOutUserFailure,
 } from "../redux/user/userSlice";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { uploadImages } from "../redux/imageUploadSlice";
 import MoonLoader from "react-spinners/MoonLoader";
 import { toast } from "react-toastify";
 
 const Profile = () => {
   const fileRef = useRef(null);
-  const { currentUser ,error} = useSelector((state) => state.user);
+  const { currentUser ,error,token} = useSelector((state) => state.user);
   const { loading } = useSelector((state) => state.images);
 
   const [file, setFile] = useState(undefined);
@@ -32,6 +32,7 @@ const Profile = () => {
   const [showMessage, setShowMessage] = useState(false);
 
   const dispatch = useDispatch();
+  const navigate=useNavigate()
 
   // Handle file change and set file state
   const handleFileChange = (e) => {
@@ -88,12 +89,15 @@ const Profile = () => {
     console.log("FormData being sent:", formData); // Debugging line
     try {
       dispatch(updateUserStart());
-      const res = await fetch(`/api/user/update/${currentUser._id}`, {
+      const res = await fetch(`https://realstate4-q8lsvtei.b4a.run/api/user/update/${currentUser._id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData), 
+        credentials: "include", // Ensure credentials (cookies) are sent with the request
+
       });
       const data = await res.json();
       if (data.success === false) {
@@ -113,32 +117,47 @@ const Profile = () => {
   const handleDeleteUser = async () => {
     try {
       dispatch(deleteUserStart());
-      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+  
+      // Retrieve token from sessionStorage (or wherever it's stored)
+  
+      const res = await fetch(`https://realstate4-q8lsvtei.b4a.run/api/user/delete/${currentUser._id}`, {
         method: "DELETE",
+        headers: {
+          "Content-Type": "application/json", // You can add this if necessary
+          "Authorization": `Bearer ${token}`, // Add token to Authorization header
+        },
+        credentials: 'include', // Include cookies in the request (if using cookies for sessions)
       });
+  
       const data = await res.json();
+  
       if (data.success === false) {
         dispatch(deleteUserFailure(data.message));
         return;
       }
+  
       dispatch(deleteUserSuccess(data));
-      toast.success('delted successfully')
+      toast.success('Deleted successfully');
+      sessionStorage.clear(); // Clear session storage after successful deletion
     } catch (error) {
       dispatch(deleteUserFailure(error.message));
     }
   };
+  
 
   const handleSignOut = async () => {
     try {
       dispatch(signOutUserStart());
-      const res = await fetch("/api/auth/signout");
+      const res = await fetch("https://realstate4-q8lsvtei.b4a.run/api/auth/signout");
       const data = await res.json();
       if (data.success === false) {
         dispatch(deleteUserFailure(data.message));
         return;
       }
       dispatch(deleteUserSuccess(data));
+      sessionStorage.clear()
       toast.success('logged out successfully')
+      navigate('/')
     } catch (error) {
       dispatch(deleteUserFailure(error.message));
     }
@@ -147,34 +166,61 @@ const Profile = () => {
   const handleShowListing = async () => {
     try {
       setshowListingError(false);
-      const res = await fetch(`/api/user/listings/${currentUser._id}`);
+  
+      // Retrieve token from sessionStorage (or wherever it's stored)
+  
+      const res = await fetch(`https://realstate4-q8lsvtei.b4a.run/api/user/listings/${currentUser._id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json", // Optional: Add this if necessary
+          "Authorization": `Bearer ${token}`, // Add token to Authorization header
+        },
+        credentials: 'include', // Include cookies in the request (if using cookies for sessions)
+      });
+  
       const data = await res.json();
+  
       if (data.success === false) {
         setshowListingError(true);
         return;
       }
+  
       setUserListings(data);
     } catch (error) {
       setshowListingError(true);
     }
   };
+  
 
   const handleListingDelete = async (listingId) => {
     try {
-      const res = await fetch(`/api/listing/delete/${listingId}`, {
+      // Retrieve the token from sessionStorage (or wherever it's stored)
+  
+      const res = await fetch(`https://realstate4-q8lsvtei.b4a.run/api/listing/delete/${listingId}`, {
         method: "DELETE",
+        headers: {
+          "Content-Type": "application/json", // Optional, depending on the backend's requirements
+          "Authorization": `Bearer ${token}`, // Include token in the Authorization header
+        },
+        credentials: 'include', // Include cookies in the request (if necessary)
       });
+  
       const data = await res.json();
+  
       if (data.success === false) {
         console.log(data.message);
         return;
       }
+  
+      // Update the state by filtering out the deleted listing
       setUserListings((prev) => prev.filter((listing) => listing._id !== listingId));
-      toast.success('Delted successfully')
+  
+      toast.success("Deleted successfully");
     } catch (error) {
       console.log(error.message);
     }
   };
+  
   console.log(error,'this is error');
   return (
     <div className="p-3 max-w-lg mx-auto">

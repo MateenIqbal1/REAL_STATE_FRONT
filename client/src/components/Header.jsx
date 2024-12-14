@@ -8,7 +8,7 @@ const Header = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false); // State for hamburger menu
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser , token} = useSelector((state) => state.user);
   const navigate = useNavigate();
 
   // Handle search submission
@@ -22,15 +22,30 @@ const Header = () => {
 
   // Verify login status
   useEffect(() => {
-    fetch('api/auth/verify', {
-      method: 'GET',
-      credentials: 'include', // Include cookies in request
-    })
-      .then((res) => res.json())
-      .then((data) => setIsLoggedIn(data.isLoggedIn))
-      .catch((err) => console.error('Error verifying login:', err));
+    const verifyLogin = async () => {
+      try {
+        // Retrieve token from Redux or localStorage/sessionStorage
+  
+        const res = await fetch('https://realstate4-q8lsvtei.b4a.run/api/auth/verify', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`, // Include token in Authorization header
+          },
+          credentials: 'include', // Include cookies in the request
+        });
+  
+        const data = await res.json();
+        setIsLoggedIn(data.isLoggedIn);
+      } catch (err) {
+        console.error('Error verifying login:', err);
+      }
+    };
+  
+    verifyLogin();
   }, [navigate]);
-  console.log(isLoggedIn,'is logged in ');
+  
+  console.log(isLoggedIn, 'is logged in');
+  
 
   return (
     <header className="bg-[#2E8B57] shadow-md">

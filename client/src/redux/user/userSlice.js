@@ -4,6 +4,7 @@ const initialState={
     currentUser:null,
     error:null,
     loading:false,
+    token:null,
 }
 
 const userSlice=createSlice({
@@ -14,14 +15,16 @@ const userSlice=createSlice({
             state.loading=true;
         },
         signInSuccess:(state,action)=>{
-            state.currentUser = action.payload;
+            state.currentUser = action.payload.rest;
             state.loading=false;
             state.error=null;
+            state.token = action.payload.token
+            sessionStorage.setItem('token',JSON.stringify(action.payload.token))
         },
         signInFailure:(state,action)=>{
             state.error=action.payload;
             state.loading=false;
-
+            state.token=null;
         },
         updateUserStart:(state)=>{
             state.loading=true;
@@ -54,6 +57,9 @@ const userSlice=createSlice({
             state.currentUser=null;
             state.loading=false;
             state.error=null;
+            state.token = null
+            sessionStorage.clear()
+            
         },
        signOutUserFailure:(state,action)=>{
             state.error=action.payload;

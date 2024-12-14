@@ -17,7 +17,7 @@ console.log(offerListings)
   useEffect(()=>{
  const fetchOfferListings=async()=>{
 try {
-    const res=await fetch('/api/listing/get?offer=true&limit=4');
+    const res=await fetch('https://realstate4-q8lsvtei.b4a.run/api/listing/get?offer=true&limit=4');
     const data=await res.json();
     setOfferListings(data);
     fetchRentListings()
@@ -27,7 +27,7 @@ try {
  }
  const fetchRentListings=async()=>{
  try {
-  const res=await fetch('/api/listing/get?type=rent&limit=4');
+  const res=await fetch('https://realstate4-q8lsvtei.b4a.run/api/listing/get?type=rent&limit=4');
   const data=await res.json();
   setRentListings(data);
   fetchSaleListings();
@@ -37,7 +37,7 @@ try {
  }  
  const fetchSaleListings=async()=>{
   try {
-    const res=await fetch('/api/listing/get?type=sale&limit=4');
+    const res=await fetch('https://realstate4-q8lsvtei.b4a.run/api/listing/get?type=sale&limit=4');
     const data=await res.json();
     setSaleListings(data);
 

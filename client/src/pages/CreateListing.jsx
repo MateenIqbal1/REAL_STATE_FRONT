@@ -6,7 +6,7 @@ import { uploadImages } from "../redux/imageUploadSlice";
 import { toast } from "react-toastify";
 
 const CreateListing = () => {
-  const { currentUser } = useSelector(state => state.user);
+  const { currentUser ,token} = useSelector(state => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
@@ -81,37 +81,46 @@ const CreateListing = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       if (formData.imageUrls.length < 1) return setError('You must upload at least one image');
       if (+formData.regularPrice < +formData.discountPrice) return setError('Discount price must be lower than regular price');
-      
+  
       setLoading(true);
       setError(false);
-
-      const res = await fetch('/api/listing/create', {
+  
+      // Retrieve the token from sessionStorage (or wherever it's stored)
+  
+      const res = await fetch('https://realstate4-q8lsvtei.b4a.run/api/listing/create', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json', // Content type header
+          'Authorization': `Bearer ${token}`, // Include token in Authorization header
         },
+        credentials: 'include', // Include cookies if necessary
         body: JSON.stringify({
           ...formData,
           userRef: currentUser._id,
         }),
       });
-
+  
       const data = await res.json();
       setLoading(false);
+  
       if (data.success === false) {
         setError(data.message);
+        return;
       }
+  
+      // Navigate to the created listing page
       navigate(`/listing/${data._id}`);
-      toast.success('Listing created successfully')
+      toast.success('Listing created successfully');
     } catch (error) {
       setError(error.message);
       setLoading(false);
     }
   };
+  console.log(formData,'this is data in create listing')
   return (
     <main className="p-3 max-w-4xl mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Create a Listing</h1>
