@@ -63,7 +63,7 @@ try {
     <br />
     we have a wide range of properties for you to choose from 
   </div>
-<Link to={'/search'} className='flex justify-center items-center text-xs p-1  lg:p-2.5  sm:text-sm lg:text-lg text-white font-serif w-[30%] sm:w-[20%] md:w-[20%] lg:w-[20%] h-auto bg-[#FF0000] border border-black rounded-full font-semibold lg:font-bold font-bold hover:underline'>
+<Link to={'/search'}  className='flex justify-center items-center text-xs p-1 sm:text-sm lg:text-lg text-white font-serif w-[40%] sm:w-[40%] md:w-[30%] lg:w-[20%] h-auto bg-[#FF0000] border border-black rounded-full font-semibold lg:font-bold hover:underline text-center whitespace-nowrap'>
 Lets get started 
 </Link>
 </div>
