@@ -25,10 +25,9 @@ const Home = () => {
         );
         const data = await res.json();
         setOfferListings(data);
-        setLoadingOffers(false);
-        fetchRentListings();
       } catch (error) {
-        console.log(error);
+        console.error('Error fetching offer listings:', error);
+      } finally {
         setLoadingOffers(false);
       }
     };
@@ -40,10 +39,9 @@ const Home = () => {
         );
         const data = await res.json();
         setRentListings(data);
-        setLoadingRents(false);
-        fetchSaleListings();
       } catch (error) {
-        console.log(error);
+        console.error('Error fetching rent listings:', error);
+      } finally {
         setLoadingRents(false);
       }
     };
@@ -55,19 +53,20 @@ const Home = () => {
         );
         const data = await res.json();
         setSaleListings(data);
-        setLoadingSales(false);
       } catch (error) {
-        console.log(error);
+        console.error('Error fetching sale listings:', error);
+      } finally {
         setLoadingSales(false);
       }
     };
 
     fetchOfferListings();
+    fetchRentListings();
+    fetchSaleListings();
   }, []);
 
   return (
     <div>
-      {/* Top Section */}
       <div className="flex flex-col gap-6 p-8 sm:p-6 lg:p-28 max-w-6xl">
         <h1 className="text-slate-700 font-bold text-2xl lg:text-6xl sm:text-sm">
           Find your next <span className="text-slate-500">perfect</span>
@@ -120,10 +119,12 @@ const Home = () => {
               <div className="flex justify-center items-center w-full h-32">
                 <ClipLoader color="#FF0000" size={50} />
               </div>
-            ) : (
+            ) : offerListings && offerListings.length > 0 ? (
               offerListings.map((listing) => (
                 <ListingItem listing={listing} key={listing._id} />
               ))
+            ) : (
+              <div className="text-gray-500">No offer listings available.</div>
             )}
           </div>
         </div>
@@ -144,10 +145,12 @@ const Home = () => {
               <div className="flex justify-center items-center w-full h-32">
                 <ClipLoader color="#FF0000" size={50} />
               </div>
-            ) : (
+            ) : rentListings && rentListings.length > 0 ? (
               rentListings.map((listing) => (
                 <ListingItem listing={listing} key={listing._id} />
               ))
+            ) : (
+              <div className="text-gray-500">No rental listings available.</div>
             )}
           </div>
         </div>
@@ -168,10 +171,12 @@ const Home = () => {
               <div className="flex justify-center items-center w-full h-32">
                 <ClipLoader color="#FF0000" size={50} />
               </div>
-            ) : (
+            ) : saleListings && saleListings.length > 0 ? (
               saleListings.map((listing) => (
                 <ListingItem listing={listing} key={listing._id} />
               ))
+            ) : (
+              <div className="text-gray-500">No sale listings available.</div>
             )}
           </div>
         </div>
