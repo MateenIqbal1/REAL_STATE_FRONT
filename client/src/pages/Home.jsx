@@ -17,53 +17,81 @@ const Home = () => {
 
   SwiperCore.use([Navigation]);
 
+  const fetchOfferListings = async () => {
+    setLoadingOffers(true);
+    try {
+      const res = await fetch(
+        'https://realstate4-q8lsvtei.b4a.run/api/listing/get?offer=true&limit=4'
+      );
+      const data = await res.json();
+      if (data.length === 0) throw new Error('No offer listings found');
+      setOfferListings(data);
+    } catch (error) {
+      console.error('Error fetching offer listings:', error);
+    } finally {
+      setLoadingOffers(false);
+    }
+  };
+
+  const fetchRentListings = async () => {
+    setLoadingRents(true);
+    try {
+      const res = await fetch(
+        'https://realstate4-q8lsvtei.b4a.run/api/listing/get?type=rent&limit=4'
+      );
+      const data = await res.json();
+      if (data.length === 0) throw new Error('No rent listings found');
+      setRentListings(data);
+    } catch (error) {
+      console.error('Error fetching rent listings:', error);
+    } finally {
+      setLoadingRents(false);
+    }
+  };
+
+  const fetchSaleListings = async () => {
+    setLoadingSales(true);
+    try {
+      const res = await fetch(
+        'https://realstate4-q8lsvtei.b4a.run/api/listing/get?type=sale&limit=4'
+      );
+      const data = await res.json();
+      if (data.length === 0) throw new Error('No sale listings found');
+      setSaleListings(data);
+    } catch (error) {
+      console.error('Error fetching sale listings:', error);
+    } finally {
+      setLoadingSales(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchOfferListings = async () => {
-      try {
-        const res = await fetch(
-          'https://realstate4-q8lsvtei.b4a.run/api/listing/get?offer=true&limit=4'
-        );
-        const data = await res.json();
-        setOfferListings(data);
-      } catch (error) {
-        console.error('Error fetching offer listings:', error);
-      } finally {
-        setLoadingOffers(false);
-      }
-    };
-
-    const fetchRentListings = async () => {
-      try {
-        const res = await fetch(
-          'https://realstate4-q8lsvtei.b4a.run/api/listing/get?type=rent&limit=4'
-        );
-        const data = await res.json();
-        setRentListings(data);
-      } catch (error) {
-        console.error('Error fetching rent listings:', error);
-      } finally {
-        setLoadingRents(false);
-      }
-    };
-
-    const fetchSaleListings = async () => {
-      try {
-        const res = await fetch(
-          'https://realstate4-q8lsvtei.b4a.run/api/listing/get?type=sale&limit=4'
-        );
-        const data = await res.json();
-        setSaleListings(data);
-      } catch (error) {
-        console.error('Error fetching sale listings:', error);
-      } finally {
-        setLoadingSales(false);
-      }
-    };
-
     fetchOfferListings();
     fetchRentListings();
     fetchSaleListings();
   }, []);
+
+  // Retry logic when no listings are found
+  useEffect(() => {
+    if (!loadingOffers && offerListings.length === 0) {
+      console.log('Retrying offer listings...');
+      fetchOfferListings();
+    }
+  }, [loadingOffers, offerListings]);
+
+  useEffect(() => {
+    if (!loadingRents && rentListings.length === 0) {
+      console.log('Retrying rent listings...');
+      fetchRentListings();
+    }
+  }, [loadingRents, rentListings]);
+
+  useEffect(() => {
+    if (!loadingSales && saleListings.length === 0) {
+      console.log('Retrying sale listings...');
+      fetchSaleListings();
+    }
+  }, [loadingSales, saleListings]);
 
   return (
     <div>
